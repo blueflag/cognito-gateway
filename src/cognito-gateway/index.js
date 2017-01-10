@@ -1,7 +1,10 @@
 /* @flow */
 import {Config, CognitoIdentityCredentials} from 'aws-sdk/lib/core';
+import confirmRegistrationMethod from './confirmRegistration';
+import resendConfirmationCodeMethod from './resendConfirmationCode';
 import signInMethod from './signIn';
 import signOutGlobalMethod from './signOutGlobal';
+import signUpMethod from './signUp';
 import updateTokenMethod from './updateToken';
 import userMethod from './user';
 
@@ -25,6 +28,7 @@ function parseRequest(method: Function): Function {
             token,
             body: JSON.parse(httpEvent.body)
         };
+
         function response(statusCode: number, body: Object) {
             callback(null, {
                 statusCode,
@@ -35,24 +39,11 @@ function parseRequest(method: Function): Function {
     };
 }
 
-// export function updateToken(httpEvent: Object, lambdaContext: Object, callback: Function) {
-//     callback(null, response(200, {type: 'updateToken'}));
-// }
 
-export const updateToken = parseRequest(updateTokenMethod);
+export const confirmRegistration = parseRequest(confirmRegistrationMethod);
+export const resendConfirmationCode = parseRequest(resendConfirmationCodeMethod);
 export const signIn = parseRequest(signInMethod);
 export const signOutGlobal = parseRequest(signOutGlobalMethod);
+export const signUp = parseRequest(signUpMethod);
+export const updateToken = parseRequest(updateTokenMethod);
 export const user = parseRequest(userMethod);
-
-// export function signOut(httpEvent: Object, lambdaContext: Object, callback: Function) {
-//     callback(null, response(200, {type: 'signOut'}));
-// }
-// export function signUp(httpEvent: Object, lambdaContext: Object, callback: Function) {
-//     callback(null, response(200, {type: 'signUp'}));
-// }
-// export function confirmRegistration(httpEvent: Object, lambdaContext: Object, callback: Function) {
-//     callback(null, response(200, {type: 'confirmRegistration'}));
-// }
-// export function resendConfirmationCode(httpEvent: Object, lambdaContext: Object, callback: Function) {
-//     callback(null, response(200, {type: 'resendConfirmationCode'}));
-// }

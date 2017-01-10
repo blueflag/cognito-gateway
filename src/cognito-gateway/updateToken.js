@@ -16,7 +16,8 @@ export default function updateToken(request: Object, response: Function) {
                 response(err.statusCode, err);
             }
             response(200, {
-                accessToken: data.AuthenticationResult.AccessToken
+                accessToken: data.AuthenticationResult.AccessToken,
+                idToken: data.AuthenticationResult.IdToken
             });
         }
     );
