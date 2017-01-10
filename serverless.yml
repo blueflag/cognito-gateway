@@ -1,0 +1,81 @@
+#
+# @see https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/
+#
+
+service: cognito-gateway
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+
+# Set env variables in the .env file
+stage: ${env:SERVERLESS_STAGE}
+region: ${env:SERVERLESS_REGION}
+
+
+# NOTE: This doesn't act quite like serverless, which adds a ** to the start of your globs which
+# massively slows down globbing. By default everything is excluded. See ./scripts/bundle.js for details.
+package:
+  include:
+    - node_modules/**
+    - dist/**
+    - prod.js
+    - package.json
+
+
+functions:
+  updateToken:
+    handler: ${env:SERVERLESS_STAGE}.updateToken
+    events:
+      - http:
+          path: /updateToken
+          method: post
+
+  user:
+    handler: ${env:SERVERLESS_STAGE}.user
+    events:
+      - http:
+          path: /user
+          method: post
+
+  signIn:
+    handler: ${env:SERVERLESS_STAGE}.signIn
+    events:
+      - http:
+          path: /signIn
+          method: post
+
+  signOutGlobal:
+    handler: ${env:SERVERLESS_STAGE}.signOutGlobal
+    events:
+      - http:
+          path: /signOutGlobal
+          method: post
+
+  signUp:
+    handler: ${env:SERVERLESS_STAGE}.signUp
+    events:
+      - http:
+          path: /signUp
+          method: post
+
+  confirmRegistration:
+    handler: ${env:SERVERLESS_STAGE}.confirmRegistration
+    events:
+      - http:
+          path: /confirmRegistration
+          method: post
+
+  resendConfirmationCode:
+    handler: ${env:SERVERLESS_STAGE}.resendConfirmationCode
+    events:
+      - http:
+          path: /resendConfirmationCode
+          method: post
+
+
+
+#   Add any plugins here
+plugins:
+  - serverless-offline
+
