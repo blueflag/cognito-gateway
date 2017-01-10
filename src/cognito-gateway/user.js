@@ -1,7 +1,7 @@
 /* @flow */
 import Pool from './userPool';
 
-export default function user(request: Object, response: Function) {
+export function userGet(request: Object, response: Function) {
     Pool.client.makeUnauthenticatedRequest(
         'getUser',
         {
@@ -12,6 +12,22 @@ export default function user(request: Object, response: Function) {
                 response(err.statusCode, err);
             }
             response(200, data);
+        }
+    );
+}
+
+
+export function userDelete(request: Object, response: Function) {
+    Pool.client.makeUnauthenticatedRequest(
+        'deleteUser',
+        {
+            AccessToken: request.token
+        },
+        (err: Object) => {
+            if (err) {
+                response(err.statusCode, err);
+            }
+            response(200, {status: 'success'});
         }
     );
 }

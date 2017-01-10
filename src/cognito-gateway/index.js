@@ -1,12 +1,13 @@
 /* @flow */
 import {Config, CognitoIdentityCredentials} from 'aws-sdk/lib/core';
-import confirmRegistrationMethod from './confirmRegistration';
-import resendConfirmationCodeMethod from './resendConfirmationCode';
+
+import refreshTokenMethod from './refreshToken';
 import signInMethod from './signIn';
 import signOutGlobalMethod from './signOutGlobal';
+import signUpConfirmMethod from './signUpConfirm';
+import signUpConfirmResendMethod from './signUpConfirmResend';
 import signUpMethod from './signUp';
-import updateTokenMethod from './updateToken';
-import userMethod from './user';
+import {userGet as userGetMethod, userDelete as userDeleteMethod} from './user';
 
 
 const {
@@ -39,11 +40,16 @@ function parseRequest(method: Function): Function {
     };
 }
 
-
-export const confirmRegistration = parseRequest(confirmRegistrationMethod);
-export const resendConfirmationCode = parseRequest(resendConfirmationCodeMethod);
+// Sign in/out/up
 export const signIn = parseRequest(signInMethod);
 export const signOutGlobal = parseRequest(signOutGlobalMethod);
 export const signUp = parseRequest(signUpMethod);
-export const updateToken = parseRequest(updateTokenMethod);
-export const user = parseRequest(userMethod);
+export const signUpConfirm = parseRequest(signUpConfirmMethod);
+export const signUpConfirmResend = parseRequest(signUpConfirmResendMethod);
+
+// refresh token
+export const refreshToken = parseRequest(refreshTokenMethod);
+
+// user
+export const userGet = parseRequest(userGetMethod);
+export const userDelete = parseRequest(userDeleteMethod);

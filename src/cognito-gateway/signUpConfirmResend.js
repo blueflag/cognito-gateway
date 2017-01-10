@@ -2,7 +2,7 @@
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 
-export default function resendConfirmationCode(request: Object, response: Function) {
+export default function signUpConfirmResend(request: Object, response: Function) {
     var {username} = request.body;
 
     const user = new CognitoUser({
@@ -15,7 +15,7 @@ export default function resendConfirmationCode(request: Object, response: Functi
             response(err.statusCode, err);
         }
 
-        response(200, result);
+        response(200, {status: 'success'});
     });
 }
 

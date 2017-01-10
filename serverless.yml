@@ -22,7 +22,6 @@ package:
     - prod.js
     - package.json
 
-
 functions:
   updateToken:
     handler: ${env:SERVERLESS_STAGE}.updateToken
@@ -31,12 +30,19 @@ functions:
           path: /updateToken
           method: post
 
-  user:
-    handler: ${env:SERVERLESS_STAGE}.user
+  userGet:
+    handler: ${env:SERVERLESS_STAGE}.userGet
     events:
       - http:
           path: /user
-          method: post
+          method: get
+
+  userDelete:
+    handler: ${env:SERVERLESS_STAGE}.userDelete
+    events:
+      - http:
+          path: /user
+          method: delete
 
   signIn:
     handler: ${env:SERVERLESS_STAGE}.signIn
@@ -59,18 +65,18 @@ functions:
           path: /signUp
           method: post
 
-  confirmRegistration:
-    handler: ${env:SERVERLESS_STAGE}.confirmRegistration
+  signUpConfirm:
+    handler: ${env:SERVERLESS_STAGE}.signUpConfirm
     events:
       - http:
-          path: /confirmRegistration
+          path: /signUpConfirm
           method: post
 
-  resendConfirmationCode:
-    handler: ${env:SERVERLESS_STAGE}.resendConfirmationCode
+  signUpConfirmResend:
+    handler: ${env:SERVERLESS_STAGE}.signUpConfirmResend
     events:
       - http:
-          path: /resendConfirmationCode
+          path: /signUpConfirmResend
           method: post
 
 
