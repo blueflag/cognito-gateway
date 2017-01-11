@@ -1,9 +1,14 @@
 /* @flow */
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
+import {usernameAndVerificationCodeRequired} from './error';
 
 export default function signUpConfirm(request: Object, response: Function) {
     var {username, verificationCode} = request.body;
+
+    if(!username || !verificationCode) {
+        response(401, userAndVerificationCodeRequired);
+    }
 
     const user = new CognitoUser({
         Username: username,

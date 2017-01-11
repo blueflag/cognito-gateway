@@ -23,11 +23,11 @@ package:
     - package.json
 
 functions:
-  updateToken:
-    handler: ${env:SERVERLESS_STAGE}.updateToken
+  refreshToken:
+    handler: ${env:SERVERLESS_STAGE}.refreshToken
     events:
       - http:
-          path: /updateToken
+          path: /refreshToken
           method: post
 
   userGet:
