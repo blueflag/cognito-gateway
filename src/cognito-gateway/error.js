@@ -1,12 +1,16 @@
 /* @flow */
 export const userNotFound = {
-    error: 'User not found'
+    message: 'User not found'
 };
 
 export const usernameAndVerificationCodeRequired = {
-    error: '`username` and `verificationCode` are required'
+    message: '`username` and `verificationCode` are required'
 };
 
 export const usernameRequired = {
-    error: '`username` is required'
+    message: '`username` is required'
+};
+
+export const usernameAndPasswordRequired = {
+    message: '`username` and `password` are required'
 };

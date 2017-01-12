@@ -5,9 +5,14 @@ import {
 } from 'amazon-cognito-identity-js';
 
 import Pool from './userPool';
+import {usernameAndPasswordRequired} from './error';
 
 export default function signIn(request: Object, response: Function) {
     const {username, password} = request.body;
+
+    if(!username || !password) {
+        response(401, usernameAndPasswordRequired);
+    }
 
     const authenticationDetails = new AuthenticationDetails({
         Username: username,

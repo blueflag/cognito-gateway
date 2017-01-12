@@ -1,9 +1,14 @@
 /* @flow */
 import {CognitoUserAttribute} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
+import {usernameAndPasswordRequired} from './error';
 
 export default function signUp(request: Object, response: Function) {
     var {username, password, attributes} = request.body;
+
+    if(!username || !password) {
+        response(401, usernameAndPasswordRequired);
+    }
 
     const attributeList = Object
         .keys(attributes)

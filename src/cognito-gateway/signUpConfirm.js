@@ -7,7 +7,7 @@ export default function signUpConfirm(request: Object, response: Function) {
     var {username, verificationCode} = request.body;
 
     if(!username || !verificationCode) {
-        response(401, userAndVerificationCodeRequired);
+        response(401, usernameAndVerificationCodeRequired);
     }
 
     const user = new CognitoUser({
