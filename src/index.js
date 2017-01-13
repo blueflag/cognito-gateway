@@ -20,36 +20,53 @@ Config.credentials = new CognitoIdentityCredentials({
     IdentityPoolId: AWS_IDENTITY_POOL_ID
 });
 
-function parseRequest(method: Function): Function {
+function parseRequest(method: Function, config: Object): Function {
     return (httpEvent: Object, lambdaContext: Object, callback: Function) => {
-        var [, token] = (httpEvent.headers.Authorization) ? httpEvent.headers.Authorization.split(' ') : [];
+        try {
+            var [, token] = (httpEvent.headers.Authorization) ? httpEvent.headers.Authorization.split(' ') : [];
+            const request = {
+                ...httpEvent,
+                token,
+                body: JSON.parse(httpEvent.body)
+            };
 
-        const request = {
-            ...httpEvent,
-            token,
-            body: JSON.parse(httpEvent.body)
-        };
 
-        function response(statusCode: number, body: Object) {
-            callback(null, {
-                statusCode,
-                body: JSON.stringify(body)
+            method(request, function response(statusCode: number, body: Object) {
+                callback(null, {
+                    statusCode,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...config.headers
+                    },
+                    body: JSON.stringify(body)
+                });
             });
+
+        } catch(err) {
+            throw {
+                statusCode: 400,
+                body: {
+                    error: err
+                }
+            };
         }
-        method(request, response);
     };
 }
 
-// Sign in/out/up
-export const signIn = parseRequest(signInMethod);
-export const signOutGlobal = parseRequest(signOutGlobalMethod);
-export const signUp = parseRequest(signUpMethod);
-export const signUpConfirm = parseRequest(signUpConfirmMethod);
-export const signUpConfirmResend = parseRequest(signUpConfirmResendMethod);
+module.exports = function cognitoGateway(config: Object = {}): Object {
+    return {
+        // Sign in/out/up
+        signIn: parseRequest(signInMethod, config),
+        signOutGlobal: parseRequest(signOutGlobalMethod, config),
+        signUp: parseRequest(signUpMethod, config),
+        signUpConfirm: parseRequest(signUpConfirmMethod, config),
+        signUpConfirmResend: parseRequest(signUpConfirmResendMethod, config),
 
-// refresh token
-export const refreshToken = parseRequest(refreshTokenMethod);
+        // refresh token
+        refreshToken: parseRequest(refreshTokenMethod, config),
 
-// user
-export const userGet = parseRequest(userGetMethod);
-export const userDelete = parseRequest(userDeleteMethod);
+        // user
+        userGet: parseRequest(userGetMethod, config),
+        userDelete: parseRequest(userDeleteMethod, config)
+    };
+};
