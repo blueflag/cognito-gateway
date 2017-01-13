@@ -21,8 +21,3 @@ dependencies:
 test:
     override:
         - yarn run test-all
-deployment:
-    master:
-        branch: master
-        commands:
-            - yarn run deploy
