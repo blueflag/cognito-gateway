@@ -9,6 +9,8 @@ import signUpConfirmResendMethod from './signUpConfirmResend';
 import signUpMethod from './signUp';
 import {userGet as userGetMethod, userDelete as userDeleteMethod} from './user';
 
+// Shim for
+global.navigator = {};
 
 const {
     AWS_REGION,
