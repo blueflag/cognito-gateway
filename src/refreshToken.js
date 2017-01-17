@@ -11,14 +11,19 @@ export default function refreshToken(request: Object, response: Function) {
                 REFRESH_TOKEN: request.body.refreshToken
             }
         },
-        (err: Object, data: Object) => {
+        (err: Object, data: Object): Object => {
             if (err) {
-                response(err.statusCode, err);
+                return response(err.statusCode, err);
             }
-            response(200, {
-                accessToken: data.AuthenticationResult.AccessToken,
-                idToken: data.AuthenticationResult.IdToken
-            });
+
+            if(data && data.AuthenticationResult) {
+                return response(200, {
+                    accessToken: data.AuthenticationResult.AccessToken,
+                    idToken: data.AuthenticationResult.IdToken
+                });
+            } else {
+                return response(err.statusCode, err);
+            }
         }
     );
 }
