@@ -1,6 +1,7 @@
 /* @flow */
 import {Config, CognitoIdentityCredentials} from 'aws-sdk/lib/core';
 
+import changePassword from './changePassword';
 import refreshToken from './refreshToken';
 import signIn from './signIn';
 import signOutGlobal from './signOutGlobal';
@@ -57,23 +58,31 @@ function parseRequest(method: Function, config: Object): Function {
 }
 
 module.exports = function cognitoGateway(config: Object = {}): Object {
-    return {
+    const methods = {
         // Sign in/out/up
-        signIn: parseRequest(signIn, config),
-        signOutGlobal: parseRequest(signOutGlobal, config),
-        signUp: parseRequest(signUp, config),
-        signUpConfirm: parseRequest(signUpConfirm, config),
-        signUpConfirmResend: parseRequest(signUpConfirmResend, config),
+        signIn,
+        signOutGlobal,
+        signUp,
+        signUpConfirm,
+        signUpConfirmResend,
 
         // refresh token
-        refreshToken: parseRequest(refreshToken, config),
+        refreshToken,
 
-        // forgot password
-        forgotPasswordRequest: parseRequest(forgotPasswordRequest, config),
-        forgotPasswordConfirm: parseRequest(forgotPasswordConfirm, config),
+        // change/forgot password
+        changePassword,
+        forgotPasswordRequest,
+        forgotPasswordConfirm,
 
         // user
-        userGet: parseRequest(userGet, config),
-        userDelete: parseRequest(userDelete, config)
+        userGet,
+        userDelete
     };
+
+    // Apply parse request to eeach method;
+    return Object.keys(methods)
+        .reduce((exp: Object, method: string): Object => {
+            exp[method] = parseRequest(methods[method], config);
+            return exp;
+        }, {});
 };
