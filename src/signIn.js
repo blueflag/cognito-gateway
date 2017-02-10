@@ -11,7 +11,7 @@ export default function signIn(request: Object, response: Function) {
     const {username, password} = request.body;
 
     if(!username || !password) {
-        response(401, usernameAndPasswordRequired);
+        return response(401, usernameAndPasswordRequired);
     }
 
     const authenticationDetails = new AuthenticationDetails({
@@ -25,11 +25,12 @@ export default function signIn(request: Object, response: Function) {
 
     user.authenticateUser(authenticationDetails, {
         onSuccess(session: Object) {
+            console.log(session);
             const accessToken = session.getAccessToken().getJwtToken();
             const idToken = session.getIdToken().getJwtToken();
             const refreshToken = session.getRefreshToken().token;
 
-            response(200, {
+            return response(200, {
                 accessToken,
                 refreshToken,
                 idToken,
@@ -37,10 +38,10 @@ export default function signIn(request: Object, response: Function) {
             });
         },
         onFailure(error: Object) {
-            response(error.statusCode, error);
+            return response(error.statusCode, error);
         },
         mfaRequired() {
-            response(500, new Error('MFA support has not been implemented yet'));
+            return response(500, new Error('MFA support has not been implemented yet'));
         }
     });
 }

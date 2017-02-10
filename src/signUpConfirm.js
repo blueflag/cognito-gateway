@@ -7,7 +7,7 @@ export default function signUpConfirm(request: Object, response: Function) {
     var {username, verificationCode} = request.body;
 
     if(!username || !verificationCode) {
-        response(401, usernameAndVerificationCodeRequired);
+        return response(401, usernameAndVerificationCodeRequired);
     }
 
     const user = new CognitoUser({
@@ -17,10 +17,10 @@ export default function signUpConfirm(request: Object, response: Function) {
 
     user.confirmRegistration(verificationCode, true, (err: Object) => {
         if (err) {
-            response(err.statusCode, err);
+            return response(err.statusCode, err);
         }
 
-        response(200, {status: 'success'});
+        return response(200, {status: 'success'});
     });
 }
 

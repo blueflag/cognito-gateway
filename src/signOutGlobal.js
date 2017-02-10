@@ -21,9 +21,9 @@ export default function signOut(request: Object, response: Function) {
         },
         (err: Object) => {
             if (err) {
-                response(err.statusCode, err);
+                return response(err.statusCode, err);
             }
-            response(200, {status: 'success'});
+            return response(200, {status: 'success'});
         }
     );
 

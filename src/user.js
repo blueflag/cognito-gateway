@@ -9,9 +9,9 @@ export function userGet(request: Object, response: Function) {
         },
         (err: Object, data: Object) => {
             if (err) {
-                response(err.statusCode, err);
+                return response(err.statusCode, err);
             }
-            response(200, data);
+            return response(200, data);
         }
     );
 }
@@ -25,9 +25,9 @@ export function userDelete(request: Object, response: Function) {
         },
         (err: Object) => {
             if (err) {
-                response(err.statusCode, err);
+                return response(err.statusCode, err);
             }
-            response(200, {status: 'success'});
+            return response(200, {status: 'success'});
         }
     );
 }

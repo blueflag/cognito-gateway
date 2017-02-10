@@ -7,7 +7,7 @@ export default function signUp(request: Object, response: Function) {
     var {username, password, attributes} = request.body;
 
     if(!username || !password) {
-        response(401, usernameAndPasswordRequired);
+        return response(401, usernameAndPasswordRequired);
     }
 
     const attributeList = Object
@@ -20,10 +20,10 @@ export default function signUp(request: Object, response: Function) {
 
     Pool.signUp(username, password, attributeList, null, (err: Object, result: Object) => {
         if (err) {
-            response(err.statusCode, err);
+            return response(err.statusCode, err);
         }
 
-        response(200, result);
+        return response(200, result);
     });
 }
 

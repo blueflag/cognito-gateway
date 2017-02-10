@@ -1,13 +1,14 @@
 /* @flow */
 import {Config, CognitoIdentityCredentials} from 'aws-sdk/lib/core';
 
-import refreshTokenMethod from './refreshToken';
-import signInMethod from './signIn';
-import signOutGlobalMethod from './signOutGlobal';
-import signUpConfirmMethod from './signUpConfirm';
-import signUpConfirmResendMethod from './signUpConfirmResend';
-import signUpMethod from './signUp';
-import {userGet as userGetMethod, userDelete as userDeleteMethod} from './user';
+import refreshToken from './refreshToken';
+import signIn from './signIn';
+import signOutGlobal from './signOutGlobal';
+import signUp from './signUp';
+import signUpConfirm from './signUpConfirm';
+import signUpConfirmResend from './signUpConfirmResend';
+import {forgotPasswordRequest, forgotPasswordConfirm} from './forgotPassword';
+import {userGet, userDelete} from './user';
 
 // Shim for
 global.navigator = {};
@@ -58,17 +59,21 @@ function parseRequest(method: Function, config: Object): Function {
 module.exports = function cognitoGateway(config: Object = {}): Object {
     return {
         // Sign in/out/up
-        signIn: parseRequest(signInMethod, config),
-        signOutGlobal: parseRequest(signOutGlobalMethod, config),
-        signUp: parseRequest(signUpMethod, config),
-        signUpConfirm: parseRequest(signUpConfirmMethod, config),
-        signUpConfirmResend: parseRequest(signUpConfirmResendMethod, config),
+        signIn: parseRequest(signIn, config),
+        signOutGlobal: parseRequest(signOutGlobal, config),
+        signUp: parseRequest(signUp, config),
+        signUpConfirm: parseRequest(signUpConfirm, config),
+        signUpConfirmResend: parseRequest(signUpConfirmResend, config),
 
         // refresh token
-        refreshToken: parseRequest(refreshTokenMethod, config),
+        refreshToken: parseRequest(refreshToken, config),
+
+        // forgot password
+        forgotPasswordRequest: parseRequest(forgotPasswordRequest, config),
+        forgotPasswordConfirm: parseRequest(forgotPasswordConfirm, config),
 
         // user
-        userGet: parseRequest(userGetMethod, config),
-        userDelete: parseRequest(userDeleteMethod, config)
+        userGet: parseRequest(userGet, config),
+        userDelete: parseRequest(userDelete, config)
     };
 };
