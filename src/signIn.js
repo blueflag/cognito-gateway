@@ -25,7 +25,6 @@ export default function signIn(request: Object, response: Function) {
 
     user.authenticateUser(authenticationDetails, {
         onSuccess(session: Object) {
-            console.log(session);
             const accessToken = session.getAccessToken().getJwtToken();
             const idToken = session.getIdToken().getJwtToken();
             const refreshToken = session.getRefreshToken().token;
