@@ -3,11 +3,19 @@ import {CognitoUserAttribute} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
 
-export default function signUp(request: Object, response: Function) {
+export default async function signUp(request: Object, response: Function, config: Object): Promise<> {
     var {username, password, attributes} = request.body;
 
     if(!username || !password) {
         return response(401, usernameAndPasswordRequired);
+    }
+
+    if(config.preSignUp) {
+        try {
+            await config.preSignUp(request.body);
+        } catch(err) {
+            return response(err.statusCode || 500, {message: err.message});
+        }
     }
 
     const attributeList = Object
@@ -18,12 +26,20 @@ export default function signUp(request: Object, response: Function) {
             });
         });
 
-    Pool.signUp(username, password, attributeList, null, (err: Object, result: Object) => {
+    Pool.signUp(username, password, attributeList, null, async (err: Object): Promise<> => {
         if (err) {
             return response(err.statusCode, err);
         }
 
-        return response(200, result);
+        if(config.postSignUp) {
+            try {
+                await config.postSignUp(request.body);
+            } catch(err) {
+                return response(err.statusCode || 500, {message: err.message});
+            }
+        }
+
+        return response(200, request.body);
     });
 }
 

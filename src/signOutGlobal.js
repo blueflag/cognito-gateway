@@ -1,14 +1,14 @@
 /* @flow */
-import {
-    CognitoUserPool,
-    AuthenticationDetails,
-    CognitoUser,
-    CognitoUserAttribute
-} from 'amazon-cognito-identity-js';
+// import {
+//     CognitoUserPool,
+//     AuthenticationDetails,
+//     CognitoUser,
+//     CognitoUserAttribute
+// } from 'amazon-cognito-identity-js';
 
 import Pool from './userPool';
-import {userNotFound} from './error';
-import jsonwebtoken from 'jsonwebtoken';
+// import {userNotFound} from './error';
+// import jsonwebtoken from 'jsonwebtoken';
 
 
 export default function signOut(request: Object, response: Function) {
@@ -19,7 +19,7 @@ export default function signOut(request: Object, response: Function) {
         {
             AccessToken: token
         },
-        (err: Object) => {
+        (err: Object): void => {
             if (err) {
                 return response(err.statusCode, err);
             }

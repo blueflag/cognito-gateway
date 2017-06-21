@@ -7,40 +7,59 @@ import {
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
 
-export default function signIn(request: Object, response: Function) {
+export default async function signIn(request: Object, response: Function, config: Object): Promise<>{
     const {username, password} = request.body;
 
     if(!username || !password) {
         return response(401, usernameAndPasswordRequired);
     }
 
+    if(config.preAuthentication) {
+        try {
+            await config.preAuthentication(request.body);
+        } catch(err) {
+            return response(err.statusCode || 500, {message: err.message});
+        }
+    }
+
     const authenticationDetails = new AuthenticationDetails({
         Username: username,
         Password: password
     });
+
     const user = new CognitoUser({
         Username: username,
         Pool
     });
 
     user.authenticateUser(authenticationDetails, {
-        onSuccess(session: Object) {
+        async onSuccess(session: Object): Promise<> {
             const accessToken = session.getAccessToken().getJwtToken();
             const idToken = session.getIdToken().getJwtToken();
             const refreshToken = session.getRefreshToken().token;
 
-            return response(200, {
+            const result = {
                 accessToken,
                 refreshToken,
                 idToken,
                 time: Math.round(Date.now() / 1000)
-            });
+            };
+
+            if(config.postAuthentication) {
+                try {
+                    await config.postAuthentication(result);
+                } catch(err) {
+                    return response(err.statusCode || 500, {message: err.message});
+                }
+            }
+
+            response(200, result);
         },
         onFailure(error: Object) {
-            return response(error.statusCode, error);
+            response(error.statusCode, error);
         },
         mfaRequired() {
-            return response(500, new Error('MFA support has not been implemented yet'));
+            response(500, new Error('MFA support has not been implemented yet'));
         }
     });
 }

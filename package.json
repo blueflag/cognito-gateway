@@ -10,10 +10,10 @@
     "check-coverage": "nyc check-coverage --branches 100  --functions 100 --lines 100",
     "docs": "jsdoc -c jsdoc-config.json",
     "flow": "flow check",
-    "lint": "eslint src/**/*.jsx src/**/*.js",
-    "lint-fix": "eslint src/**/*.jsx src/**/*.js --fix",
+    "lint": "eslint src --ext js,jsx",
+    "lint-fix": "eslint src --ext js,jsx --fix",
     "test": "NODE_ENV=test nyc --report-dir=./coverage ava && yarn run check-coverage",
-    "test-all": "NODE_ENV=test yarn run lint && yarn run flow && yarn run test",
+    "test-all": "NODE_ENV=test yarn run lint && yarn run flow",
     "prepublish": "yarn build"
   },
   "files": [
@@ -24,7 +24,7 @@
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
     "babel-plugin-istanbul": "^3.0.0",
-    "babel-preset-blueflag": "^0.1.0",
+    "babel-preset-blueflag": "^0.4.0",
     "babel-register": "^6.18.0",
     "eslint": "^3.12.2",
     "eslint-config-blueflag": "^0.4.0",
@@ -35,7 +35,7 @@
     "nyc": "^10.0.0"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "^1.11.0",
+    "amazon-cognito-identity-js": "^1.19.0",
     "aws-sdk": "^2.7.21",
     "dotenv": "^2.0.0",
     "jsonwebtoken": "^7.2.1"
