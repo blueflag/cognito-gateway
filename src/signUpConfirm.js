@@ -3,7 +3,7 @@ import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameAndVerificationCodeRequired} from './error';
 
-export default function signUpConfirm(request: Object, response: Function) {
+export default function signUpConfirm(request: Object, response: Function): void {
     var {username, verificationCode} = request.body;
 
     if(!username || !verificationCode) {
@@ -15,7 +15,7 @@ export default function signUpConfirm(request: Object, response: Function) {
         Pool
     });
 
-    user.confirmRegistration(verificationCode, true, (err: Object) => {
+    user.confirmRegistration(verificationCode, true, (err: Object): void => {
         if (err) {
             return response(err.statusCode, err);
         }

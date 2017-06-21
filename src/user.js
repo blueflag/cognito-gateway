@@ -7,7 +7,7 @@ export function userGet(request: Object, response: Function) {
         {
             AccessToken: request.token
         },
-        (err: Object, data: Object) => {
+        (err: Object, data: Object): void => {
             if (err) {
                 return response(err.statusCode, err);
             }
@@ -23,7 +23,7 @@ export function userDelete(request: Object, response: Function) {
         {
             AccessToken: request.token
         },
-        (err: Object) => {
+        (err: Object): void => {
             if (err) {
                 return response(err.statusCode, err);
             }

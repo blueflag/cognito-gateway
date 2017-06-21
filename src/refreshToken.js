@@ -2,6 +2,7 @@
 import Pool from './userPool';
 
 export default function refreshToken(request: Object, response: Function) {
+
     Pool.client.makeUnauthenticatedRequest(
         'initiateAuth',
         {

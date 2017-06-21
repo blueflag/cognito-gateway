@@ -31,7 +31,7 @@ function parseRequest(method: Function, config: Object): Function {
             const request = {
                 ...httpEvent,
                 token,
-                body: JSON.parse(httpEvent.body)
+                body: httpEvent.body ? JSON.parse(httpEvent.body) : {}
             };
 
 
@@ -44,7 +44,7 @@ function parseRequest(method: Function, config: Object): Function {
                     },
                     body: JSON.stringify(body)
                 });
-            });
+            }, config);
 
         } catch(err) {
             throw {
