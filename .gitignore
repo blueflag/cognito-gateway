@@ -9,6 +9,7 @@ coverage
 tmp.config.json
 bundle
 .serverless
+*.log
 
 **/.idea/workspace.xml
 **/.idea/tasks.xml
