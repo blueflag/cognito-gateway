@@ -1,6 +1,6 @@
 {
   "name": "cognito-gateway",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A gateway lambda for dealing with cognito apis",
   "main": "lib/index.js",
   "license": "UNLICENSED",
