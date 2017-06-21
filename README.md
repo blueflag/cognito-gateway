@@ -3,7 +3,7 @@
 ## Usage
 
 ```js
-import cognitoGatway from 'cognito-gateway';
+import cognitoGateway from 'cognito-gateway';
 
 
 export const {
