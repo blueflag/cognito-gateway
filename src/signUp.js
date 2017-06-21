@@ -26,14 +26,14 @@ export default async function signUp(request: Object, response: Function, config
             });
         });
 
-    Pool.signUp(username, password, attributeList, null, async (err: Object): Promise<> => {
+    Pool.signUp(username, password, attributeList, null, async (err: Object, result: Object): Promise<> => {
         if (err) {
             return response(err.statusCode, err);
         }
 
         if(config.postSignUp) {
             try {
-                await config.postSignUp(request.body);
+                await config.postSignUp(request.body, result);
             } catch(err) {
                 return response(err.statusCode || 500, {message: err.message});
             }
