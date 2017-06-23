@@ -40,7 +40,9 @@ export default async function signUp(request: Object, response: Function, config
         }
         // Delete password from response
         delete request.body.password;
-        return response(200, request.body);
+        return response(200, {
+            user: request.body
+        });
     });
 }
 
