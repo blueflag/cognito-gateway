@@ -38,7 +38,8 @@ export default async function signUp(request: Object, response: Function, config
                 return response(err.statusCode || 500, {message: err.message});
             }
         }
-
+        // Delete password from response
+        delete request.body.password;
         return response(200, request.body);
     });
 }
