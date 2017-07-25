@@ -44,8 +44,6 @@ function parseRequest(method: Function, methodName: string, config: Object): Fun
             });
         };
 
-        if(!token) return response(401, {message: 'Not Authorized'});
-
         try {
             let requestBody = httpEvent.body ? JSON.parse(httpEvent.body) : {};
 

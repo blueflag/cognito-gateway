@@ -3,21 +3,24 @@
 import Pool from './userPool';
 import {GromitError} from 'gromit';
 
-export default function signOut(request: Object, response: Function) {
-    var [, token] = request.headers.Authorization.split(' ');
+export default function signOut(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    Pool.client.makeUnauthenticatedRequest(
-        'globalSignOut',
-        {
-            AccessToken: token
-        },
-        (err: Object): void => {
-            if (err) {
-                return response(err.statusCode, GromitError.wrap(err));
+    return new Promise((resolve: Function): void => {
+        if(!request.token) return resolve({statusCode: 401, body: GromitError.unauthorized()});
+
+        Pool.client.makeUnauthenticatedRequest(
+            'globalSignOut',
+            {
+                AccessToken: request.token
+            },
+            (err: Object): void => {
+                if (err) {
+                    return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                }
+                return resolve({statusCode: 200, body: {status: 'success'}});
             }
-            return response(200, {status: 'success'});
-        }
-    );
+        );
+    });
 
 }
 

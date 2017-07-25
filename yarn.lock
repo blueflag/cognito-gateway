@@ -2347,9 +2347,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-gromit@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/gromit/-/gromit-0.0.6.tgz#bb97ff56e8bf707a2f084df038736fd5c45ebce4"
+gromit@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/gromit/-/gromit-0.0.10.tgz#4ec2292af1b08d57c68bc6aec485694bde9e70d3"
   dependencies:
     axios "^0.16.2"
     babel-runtime "^6.23.0"
