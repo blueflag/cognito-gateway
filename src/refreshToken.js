@@ -1,5 +1,6 @@
 /* @flow */
 import Pool from './userPool';
+import {GromitError} from 'gromit';
 
 export default function refreshToken(request: Object, response: Function) {
 
@@ -14,7 +15,7 @@ export default function refreshToken(request: Object, response: Function) {
         },
         (err: Object, data: Object): Object => {
             if (err) {
-                return response(err.statusCode, err);
+                return response(err.statusCode, GromitError.wrap(err));
             }
 
             if(data && data.AuthenticationResult) {
@@ -23,7 +24,7 @@ export default function refreshToken(request: Object, response: Function) {
                     idToken: data.AuthenticationResult.IdToken
                 });
             } else {
-                return response(err.statusCode, err);
+                return response(500, GromitError.internal('Refresh token failed', 'REFRESH_TOKEN_FAILED'));
             }
         }
     );

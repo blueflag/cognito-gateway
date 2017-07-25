@@ -6,20 +6,13 @@ import {
 
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
+import {GromitError} from 'gromit';
 
-export default async function signIn(request: Object, response: Function, config: Object): Promise<>{
+export default async function signIn(request: Object, response: Function): Promise<>{
     const {username, password} = request.body;
 
     if(!username || !password) {
         return response(401, usernameAndPasswordRequired);
-    }
-
-    if(config.preAuthentication) {
-        try {
-            await config.preAuthentication(request.body);
-        } catch(err) {
-            return response(err.statusCode || 500, {message: err.message});
-        }
     }
 
     const authenticationDetails = new AuthenticationDetails({
@@ -45,21 +38,14 @@ export default async function signIn(request: Object, response: Function, config
                 time: Math.round(Date.now() / 1000)
             };
 
-            if(config.postAuthentication) {
-                try {
-                    await config.postAuthentication(result);
-                } catch(err) {
-                    return response(err.statusCode || 500, {message: err.message});
-                }
-            }
 
             response(200, result);
         },
         onFailure(error: Object) {
-            response(error.statusCode, error);
+            response(error.statusCode, GromitError.wrap(error));
         },
         mfaRequired() {
-            response(500, new Error('MFA support has not been implemented yet'));
+            response(501, GromitError.notImplemented('MFA support has not been implemented yet'));
         }
     });
 }

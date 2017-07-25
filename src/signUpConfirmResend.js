@@ -2,6 +2,7 @@
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameRequired} from './error';
+import {GromitError} from 'gromit';
 
 export default function signUpConfirmResend(request: Object, response: Function): void {
     var {username} = request.body;
@@ -17,7 +18,7 @@ export default function signUpConfirmResend(request: Object, response: Function)
 
     user.resendConfirmationCode((err: Object): void => {
         if (err) {
-            return response(err.statusCode, err);
+            return response(err.statusCode, GromitError.wrap(err));
         }
 
         return response(200, {status: 'success'});

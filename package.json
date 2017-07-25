@@ -24,20 +24,19 @@
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
     "babel-plugin-istanbul": "^3.0.0",
-    "babel-preset-blueflag": "^0.4.0",
+    "babel-preset-blueflag": "^0.6.0",
     "babel-register": "^6.18.0",
     "eslint": "^3.12.2",
     "eslint-config-blueflag": "^0.4.0",
-    "flow-bin": "^0.37.0",
-    "jsdoc": "^3.4.3",
+    "flow-bin": "^0.51.0",
     "jsdoc-babel": "^0.3.0",
-    "jsdonk": "^0.2.3",
     "nyc": "^10.0.0"
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.19.0",
     "aws-sdk": "^2.7.21",
     "dotenv": "^2.0.0",
+    "gromit": "^0.0.6",
     "jsonwebtoken": "^7.2.1"
   },
   "ava": {
