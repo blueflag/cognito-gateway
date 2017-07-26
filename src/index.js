@@ -44,17 +44,17 @@ function parseRequest(method: Function, methodName: string, config: Object): Fun
             });
         };
 
+        const preHook = config[`pre${methodName[0].toUpperCase()}${methodName.slice(1)}`];
+        const postHook = config[`post${methodName[0].toUpperCase()}${methodName.slice(1)}`];
+
         try {
             let requestBody = httpEvent.body ? JSON.parse(httpEvent.body) : {};
-
-            const preHook = config[`pre${methodName[0].toUpperCase()}${methodName.slice(1)}`];
-            const postHook = config[`post${methodName[0].toUpperCase()}${methodName.slice(1)}`];
 
             if(preHook) {
                 try {
                     requestBody = await preHook(requestBody, httpEvent, lambdaContext);
-                } catch(err) {
-                    return response(err.statusCode || 500, GromitError.wrap(err));
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
                 }
             }
 
@@ -68,16 +68,25 @@ function parseRequest(method: Function, methodName: string, config: Object): Fun
 
             if(postHook) {
                 try {
-                    responseBody = await postHook(responseBody, httpEvent, lambdaContext);
-                } catch(err) {
-                    return response(err.statusCode || 500, GromitError.wrap(err));
+                    responseBody = await postHook(null, responseBody, httpEvent, lambdaContext);
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
                 }
             }
 
             return response(statusCode, responseBody);
 
         } catch(err) {
-            return response(500, GromitError.wrap(err));
+
+            if(postHook) {
+                try {
+                    await postHook(err, null, httpEvent, lambdaContext);
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
+                }
+            }
+
+            return response(err.statusCode || 500, GromitError.wrap(err));
         }
     };
 }

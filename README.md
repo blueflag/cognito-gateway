@@ -5,7 +5,6 @@
 ```js
 import cognitoGateway from 'cognito-gateway';
 
-
 export const {
     signIn,
     signUp,
@@ -22,10 +21,9 @@ export const {
     headers: {
         'Access-Control-Allow-Origin': '*'
     },
-    preAuthentication: ({username, password}) => {}, // custom pre auth logic
-    postAuthentication: ({accessToken, refreshToken, idToken}) => {}, // custom post auth logic
-    preSignUp: ({username, password, attributes}) => {}, // custom pre sign up logic
-    postSignUp: ({username, password, attributes}, result) => {}, // custom post sign up logic
+    preSignIn: (requestBody) => requestBody, // custom pre auth logic
+    postSignIn: (responseBody) => responseBody, // custom post auth logic
+    // more hooks
 });
 
 ```
@@ -39,25 +37,190 @@ An object containing any headers to be added to the http response.
 
 ### Hooks
 
-Hooks are called at various points throughout the signup and authentication process. They can be used to add custom authentication or perform additional actions in response to authentication or signup. All hooks are async so you can return a promise. If the promise is rejected or an error is thrown during the hook execution then cognitoGateway will create a http response from the `err.statusCode` and `err.message` properies of the promise rejection payload or thrown error.
+Hooks are called at various points throughout the signup and authentication process. They can be used to add custom authentication or perform additional actions in response to authentication or signup. All hooks are async so you can return a promise. The promise should resolve to an object in the same structure as the request or response body. If the promise is rejected or an error is thrown during the hook execution then cognitoGateway will create a http response from the `err.statusCode` and `err.message` properies of the promise rejection payload or thrown error.
 
-#### `preAuthentication`: `({username, password}) => Promise<void>`
+The available hooks are:
 
-Called before authentication is attempted.
+```js
+preSignIn(
+    requestBody: {
+        username: string,
+        password: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
 
-#### `postAuthentication`: `({accessToken, refreshToken, idToken}) => Promise<void>`
+postSignIn(
+    error: ?GromitError,
+    responseBody: ?{
+        accessToken: string,
+        refreshToken: string,
+        idToken: string,
+        time: number
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
 
-Called after authentication is attempted.
+preSignUp(
+    requestBody: {
+        username: string,
+        password: string,
+        attributes: Object
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
 
+postSignUp(
+    error: ?GromitError,
+    responseBody: ?{
+        user: {
+            username: string,
+            attributes: Object
+        }
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
 
-#### `preSignUp`: `({username, password, attributes}) => Promise<void>`
+preSignOutGlobal(
+    requestBody: {},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
 
-Called before user has signed up. Can be used to perform additional validation on attributes or to block certain users.
+postSignOutGlobal(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
 
+preSignUpConfirm(
+    requestBody: {
+        username: string,
+        verificationCode: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
 
-#### `postSignUp`: `({username, password, attributes}, result: CognitoAuthenticationResult) => Promise<void>`
+postSignUpConfirm(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
 
-Called after a user has successfully signed up. See [here](https://github.com/aws/amazon-cognito-identity-js/blob/master/src/CognitoUserPool.js#L96) for info on `CognitoAuthenticationResult`
+preSignUpConfirmResend(
+    requestBody: {
+        username: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postSignUpConfirmResend(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preRefreshToken(
+    requestBody: {refreshToken: string},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postRefreshToken(
+    error: ?GromitError,
+    responseBody: ?{
+        accessToken: string,
+        idToken: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preChangePassword(
+    requestBody: {
+        password: string,
+        newPassword: string,
+        accessToken: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postChangePassword(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preForgotPasswordRequest(
+    requestBody: {
+        username: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postForgotPasswordRequest(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preForgotPasswordConfirm(
+    requestBody: {
+        username: string,
+        confirmationCode: string,
+        password: string
+    },
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postForgotPasswordConfirm(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preUserGet(
+    requestBody: {},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postUserGet(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+preUserDelete(
+    requestBody: {},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<requestBody>
+
+postUserDelete(
+    error: ?GromitError,
+    responseBody: ?{status: 'success'},
+    httpEvent: AWSLambdaEvent,
+    lambdaContext: AWSLambdaContext
+) => Promise<responseBody>
+
+```
 
 
 ## Auth

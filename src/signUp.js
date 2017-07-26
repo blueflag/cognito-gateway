@@ -6,11 +6,11 @@ import {GromitError} from 'gromit';
 
 export default async function signUp(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    return new Promise((resolve: Function): void => {
+    return new Promise((resolve: Function, reject: Function): void => {
         var {username, password, attributes} = request.body;
 
         if(!username || !password) {
-            return resolve({statusCode: 401, body: usernameAndPasswordRequired});
+            return reject(usernameAndPasswordRequired);
         }
 
         const attributeList = Object
@@ -23,7 +23,7 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
 
         Pool.signUp(username, password, attributeList, null, async (err: Object): Promise<> => {
             if (err) {
-                return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                return reject(GromitError.wrap(err));
             }
 
             // Delete password from response

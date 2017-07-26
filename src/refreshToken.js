@@ -3,8 +3,8 @@ import Pool from './userPool';
 import {GromitError} from 'gromit';
 
 export default function refreshToken(request: Object): Promise<{statusCode: number, body: Object}> {
-    return new Promise((resolve: Function): void => {
-        if(!request.body.refreshToken) return resolve({statusCode: 401, body: GromitError.unauthorized()});
+    return new Promise((resolve: Function, reject: Function): void => {
+        if(!request.body.refreshToken) return reject({statusCode: 401, body: GromitError.unauthorized()});
 
         Pool.client.makeUnauthenticatedRequest(
             'initiateAuth',
@@ -17,7 +17,7 @@ export default function refreshToken(request: Object): Promise<{statusCode: numb
             },
             (err: Object, data: Object): Object => {
                 if (err) {
-                    return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                    return reject(GromitError.wrap(err));
                 }
 
                 if(data && data.AuthenticationResult) {
@@ -26,7 +26,7 @@ export default function refreshToken(request: Object): Promise<{statusCode: numb
                         idToken: data.AuthenticationResult.IdToken
                     }});
                 } else {
-                    return resolve({statusCode: 500, body: GromitError.internal('Refresh token failed', 'REFRESH_TOKEN_FAILED')});
+                    return reject(GromitError.internal('Refresh token failed', 'REFRESH_TOKEN_FAILED'));
                 }
             }
         );

@@ -3,7 +3,7 @@ import Pool from '../userPool';
 import {GromitError} from 'gromit';
 
 export default function cognitoRequest(requestString: string, bodyCreator: Function): Function {
-    return (request: Object) => new Promise((resolve: Function) => {
+    return (request: Object) => new Promise((resolve: Function, reject: Function) => {
         Pool.client.makeUnauthenticatedRequest(
             requestString,
             bodyCreator({
@@ -12,7 +12,7 @@ export default function cognitoRequest(requestString: string, bodyCreator: Funct
             }),
             (err: Object, data: Object): Object => {
                 if (err) {
-                    return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                    return reject(GromitError.wrap(err));
                 }
 
                 if(data && Object.keys(data).length > 0 && data.constructor === Object) {

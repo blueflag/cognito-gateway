@@ -2,8 +2,8 @@
 import Pool from './userPool';
 import {GromitError} from 'gromit';
 export function userGet(request: Object): Promise<{statusCode: number, body: Object}> {
-    return new Promise((resolve: Function): void => {
-        if(!request.token) return resolve({statusCode: 401, body: GromitError.unauthorized()});
+    return new Promise((resolve: Function, reject: Function): void => {
+        if(!request.token) return reject(GromitError.unauthorized());
         Pool.client.makeUnauthenticatedRequest(
             'getUser',
             {
@@ -11,7 +11,7 @@ export function userGet(request: Object): Promise<{statusCode: number, body: Obj
             },
             (err: Object, data: Object): void => {
                 if (err) {
-                    return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                    return reject(GromitError.wrap(err));
                 }
                 return resolve({statusCode: 200, body: data});
             }
@@ -21,8 +21,8 @@ export function userGet(request: Object): Promise<{statusCode: number, body: Obj
 
 
 export function userDelete(request: Object): Promise<{statusCode: number, body: Object}> {
-    return new Promise((resolve: Function): void => {
-        if(!request.token) return resolve({statusCode: 401, body: GromitError.unauthorized()});
+    return new Promise((resolve: Function, reject: Function): void => {
+        if(!request.token) return reject(GromitError.unauthorized());
         Pool.client.makeUnauthenticatedRequest(
             'deleteUser',
             {
@@ -30,7 +30,7 @@ export function userDelete(request: Object): Promise<{statusCode: number, body: 
             },
             (err: Object): void => {
                 if (err) {
-                    return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                    return reject(GromitError.wrap(err));
                 }
                 return resolve({statusCode: 200, body: {status: 'success'}});
             }

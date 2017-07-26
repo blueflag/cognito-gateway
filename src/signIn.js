@@ -10,12 +10,12 @@ import {GromitError} from 'gromit';
 
 export default async function signIn(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    return new Promise((resolve: Function): void => {
+    return new Promise((resolve: Function, reject: Function): void => {
 
         const {username, password} = request.body;
 
         if(!username || !password) {
-            return resolve({statusCode: 401, body: usernameAndPasswordRequired});
+            return reject(usernameAndPasswordRequired);
         }
 
         const authenticationDetails = new AuthenticationDetails({
@@ -45,10 +45,10 @@ export default async function signIn(request: Object): Promise<{statusCode: numb
                 resolve({statusCode: 200, body: result});
             },
             onFailure(error: Object) {
-                resolve({statusCode: error.statusCode, body: GromitError.wrap(error)});
+                reject(GromitError.wrap(error));
             },
             mfaRequired() {
-                resolve({statusCode: 501, body: GromitError.notImplemented('MFA support has not been implemented yet')});
+                reject(GromitError.notImplemented('MFA support has not been implemented yet'));
             }
         });
     });

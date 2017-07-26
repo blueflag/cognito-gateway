@@ -5,11 +5,11 @@ import {usernameRequired} from './error';
 import {GromitError} from 'gromit';
 
 export default function signUpConfirmResend(request: Object): Promise<{statusCode: number, body: Object}> {
-    return new Promise((resolve: Function): void => {
+    return new Promise((resolve: Function, reject: Function): void => {
         var {username} = request.body;
 
         if(!username) {
-            return resolve({statusCode: 401, body: usernameRequired});
+            return reject(usernameRequired);
         }
 
         const user = new CognitoUser({
@@ -19,7 +19,7 @@ export default function signUpConfirmResend(request: Object): Promise<{statusCod
 
         user.resendConfirmationCode((err: Object): void => {
             if (err) {
-                return resolve({statusCode: err.statusCode, body: GromitError.wrap(err)});
+                return reject(GromitError.wrap(err));
             }
 
             return resolve({statusCode: 200, body: {status: 'success'}});
