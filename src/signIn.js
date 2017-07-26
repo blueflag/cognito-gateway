@@ -6,61 +6,52 @@ import {
 
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
+import {GromitError} from 'gromit';
 
-export default async function signIn(request: Object, response: Function, config: Object): Promise<>{
-    const {username, password} = request.body;
+export default async function signIn(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    if(!username || !password) {
-        return response(401, usernameAndPasswordRequired);
-    }
+    return new Promise((resolve: Function, reject: Function): void => {
 
-    if(config.preAuthentication) {
-        try {
-            await config.preAuthentication(request.body);
-        } catch(err) {
-            return response(err.statusCode || 500, {message: err.message});
+        const {username, password} = request.body;
+
+        if(!username || !password) {
+            return reject(usernameAndPasswordRequired);
         }
-    }
 
-    const authenticationDetails = new AuthenticationDetails({
-        Username: username,
-        Password: password
-    });
+        const authenticationDetails = new AuthenticationDetails({
+            Username: username,
+            Password: password
+        });
 
-    const user = new CognitoUser({
-        Username: username,
-        Pool
-    });
+        const user = new CognitoUser({
+            Username: username,
+            Pool
+        });
 
-    user.authenticateUser(authenticationDetails, {
-        async onSuccess(session: Object): Promise<> {
-            const accessToken = session.getAccessToken().getJwtToken();
-            const idToken = session.getIdToken().getJwtToken();
-            const refreshToken = session.getRefreshToken().token;
+        user.authenticateUser(authenticationDetails, {
+            async onSuccess(session: Object): Promise<> {
+                const accessToken = session.getAccessToken().getJwtToken();
+                const idToken = session.getIdToken().getJwtToken();
+                const refreshToken = session.getRefreshToken().token;
 
-            const result = {
-                accessToken,
-                refreshToken,
-                idToken,
-                time: Math.round(Date.now() / 1000)
-            };
+                const result = {
+                    accessToken,
+                    refreshToken,
+                    idToken,
+                    time: Math.round(Date.now() / 1000)
+                };
 
-            if(config.postAuthentication) {
-                try {
-                    await config.postAuthentication(result);
-                } catch(err) {
-                    return response(err.statusCode || 500, {message: err.message});
-                }
+
+                resolve({statusCode: 200, body: result});
+            },
+            onFailure(error: Object) {
+                reject(GromitError.wrap(error));
+            },
+            mfaRequired() {
+                reject(GromitError.notImplemented('MFA support has not been implemented yet'));
             }
-
-            response(200, result);
-        },
-        onFailure(error: Object) {
-            response(error.statusCode, error);
-        },
-        mfaRequired() {
-            response(500, new Error('MFA support has not been implemented yet'));
-        }
+        });
     });
+
 }
 

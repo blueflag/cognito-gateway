@@ -2,47 +2,37 @@
 import {CognitoUserAttribute} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
+import {GromitError} from 'gromit';
 
-export default async function signUp(request: Object, response: Function, config: Object): Promise<> {
-    var {username, password, attributes} = request.body;
+export default async function signUp(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    if(!username || !password) {
-        return response(401, usernameAndPasswordRequired);
-    }
+    return new Promise((resolve: Function, reject: Function): void => {
+        var {username, password, attributes} = request.body;
 
-    if(config.preSignUp) {
-        try {
-            await config.preSignUp(request.body);
-        } catch(err) {
-            return response(err.statusCode || 500, {message: err.message});
+        if(!username || !password) {
+            return reject(usernameAndPasswordRequired);
         }
-    }
 
-    const attributeList = Object
-        .keys(attributes)
-        .map((key: string): Object[] => {
-            return new CognitoUserAttribute({
-                Name: key, Value: attributes[key]
+        const attributeList = Object
+            .keys(attributes)
+            .map((key: string): Object[] => {
+                return new CognitoUserAttribute({
+                    Name: key, Value: attributes[key]
+                });
             });
-        });
 
-    Pool.signUp(username, password, attributeList, null, async (err: Object, result: Object): Promise<> => {
-        if (err) {
-            return response(err.statusCode, err);
-        }
-
-        if(config.postSignUp) {
-            try {
-                await config.postSignUp(request.body, result);
-            } catch(err) {
-                return response(err.statusCode || 500, {message: err.message});
+        Pool.signUp(username, password, attributeList, null, async (err: Object): Promise<> => {
+            if (err) {
+                return reject(GromitError.wrap(err));
             }
-        }
-        // Delete password from response
-        delete request.body.password;
-        return response(200, {
-            user: request.body
+
+            // Delete password from response
+            delete request.body.password;
+            return resolve({statusCode: 200, body: {
+                user: request.body
+            }});
         });
     });
+
 }
 

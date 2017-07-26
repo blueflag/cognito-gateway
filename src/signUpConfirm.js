@@ -2,25 +2,29 @@
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameAndVerificationCodeRequired} from './error';
+import {GromitError} from 'gromit';
 
-export default function signUpConfirm(request: Object, response: Function): void {
-    var {username, verificationCode} = request.body;
+export default function signUpConfirm(request: Object): Promise<{statusCode: number, body: Object}> {
 
-    if(!username || !verificationCode) {
-        return response(401, usernameAndVerificationCodeRequired);
-    }
+    return new Promise((resolve: Function, reject: Function): void => {
+        var {username, verificationCode} = request.body;
 
-    const user = new CognitoUser({
-        Username: username,
-        Pool
-    });
-
-    user.confirmRegistration(verificationCode, true, (err: Object): void => {
-        if (err) {
-            return response(err.statusCode, err);
+        if(!username || !verificationCode) {
+            return reject(usernameAndVerificationCodeRequired);
         }
 
-        return response(200, {status: 'success'});
+        const user = new CognitoUser({
+            Username: username,
+            Pool
+        });
+
+        user.confirmRegistration(verificationCode, true, (err: Object): void => {
+            if (err) {
+                return reject(GromitError.wrap(err));
+            }
+
+            return resolve({statusCode: 200, body: {status: 'success'}});
+        });
     });
 }
 

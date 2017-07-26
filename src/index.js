@@ -10,6 +10,7 @@ import signUpConfirm from './signUpConfirm';
 import signUpConfirmResend from './signUpConfirmResend';
 import {forgotPasswordRequest, forgotPasswordConfirm} from './forgotPassword';
 import {userGet, userDelete} from './user';
+import {GromitError} from 'gromit';
 
 // Shim for
 global.navigator = {};
@@ -24,35 +25,68 @@ Config.credentials = new CognitoIdentityCredentials({
     IdentityPoolId: AWS_IDENTITY_POOL_ID
 });
 
-function parseRequest(method: Function, config: Object): Function {
-    return (httpEvent: Object, lambdaContext: Object, callback: Function) => {
+function parseRequest(method: Function, methodName: string, config: Object): Function {
+    return async (httpEvent: Object, lambdaContext: Object, callback: Function): Promise<void> => {
+
+        const authHeader = httpEvent.headers.Authorization || '';
+        const [, token] = authHeader.split(' ');
+
+        const headers = {
+            'Content-Type': 'application/json',
+            ...config.headers
+        };
+
+        const response = (statusCode: number, body: Object) => {
+            callback(null, {
+                statusCode: statusCode,
+                body: JSON.stringify(body),
+                headers
+            });
+        };
+
+        const preHook = config[`pre${methodName[0].toUpperCase()}${methodName.slice(1)}`];
+        const postHook = config[`post${methodName[0].toUpperCase()}${methodName.slice(1)}`];
+
         try {
-            var [, token] = (httpEvent.headers.Authorization) ? httpEvent.headers.Authorization.split(' ') : [];
+            let requestBody = httpEvent.body ? JSON.parse(httpEvent.body) : {};
+
+            if(preHook) {
+                try {
+                    requestBody = await preHook(requestBody, httpEvent, lambdaContext);
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
+                }
+            }
+
             const request = {
                 ...httpEvent,
                 token,
-                body: httpEvent.body ? JSON.parse(httpEvent.body) : {}
+                body: requestBody
             };
 
+            let {statusCode, body: responseBody} = await method(request);
 
-            method(request, function response(statusCode: number, body: Object) {
-                callback(null, {
-                    statusCode,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...config.headers
-                    },
-                    body: JSON.stringify(body)
-                });
-            }, config);
+            if(postHook) {
+                try {
+                    responseBody = await postHook(null, responseBody, httpEvent, lambdaContext);
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
+                }
+            }
+
+            return response(statusCode, responseBody);
 
         } catch(err) {
-            throw {
-                statusCode: 400,
-                body: {
-                    error: err
+
+            if(postHook) {
+                try {
+                    await postHook(err, null, httpEvent, lambdaContext);
+                } catch(hookError) {
+                    return response(hookError.statusCode || 500, GromitError.wrap(hookError));
                 }
-            };
+            }
+
+            return response(err.statusCode || 500, GromitError.wrap(err));
         }
     };
 }
@@ -82,7 +116,7 @@ module.exports = function cognitoGateway(config: Object = {}): Object {
     // Apply parse request to eeach method;
     return Object.keys(methods)
         .reduce((exp: Object, method: string): Object => {
-            exp[method] = parseRequest(methods[method], config);
+            exp[method] = parseRequest(methods[method], method, config);
             return exp;
         }, {});
 };

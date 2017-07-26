@@ -2,25 +2,28 @@
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameRequired} from './error';
+import {GromitError} from 'gromit';
 
-export default function signUpConfirmResend(request: Object, response: Function): void {
-    var {username} = request.body;
+export default function signUpConfirmResend(request: Object): Promise<{statusCode: number, body: Object}> {
+    return new Promise((resolve: Function, reject: Function): void => {
+        var {username} = request.body;
 
-    if(!username) {
-        return response(401, usernameRequired);
-    }
-
-    const user = new CognitoUser({
-        Username: username,
-        Pool
-    });
-
-    user.resendConfirmationCode((err: Object): void => {
-        if (err) {
-            return response(err.statusCode, err);
+        if(!username) {
+            return reject(usernameRequired);
         }
 
-        return response(200, {status: 'success'});
+        const user = new CognitoUser({
+            Username: username,
+            Pool
+        });
+
+        user.resendConfirmationCode((err: Object): void => {
+            if (err) {
+                return reject(GromitError.wrap(err));
+            }
+
+            return resolve({statusCode: 200, body: {status: 'success'}});
+        });
     });
 }
 
