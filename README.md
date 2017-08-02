@@ -1,6 +1,6 @@
 # Cognito Gateway API
-[![cognito-gateway npm](https://img.shields.io/npm/v/cognito-gateway.svg?style=flat-square)](https://www.npmjs.com/package/stampy)
-[![cognito-gateway circle](https://img.shields.io/circleci/project/github/blueflag/cognito-gateway.svg?style=flat-square)]()
+[![cognito-gateway npm](https://img.shields.io/npm/v/cognito-gateway.svg?style=flat-square)](https://www.npmjs.com/package/cognito-gateway)
+[![cognito-gateway circle](https://img.shields.io/circleci/project/github/blueflag/cognito-gateway.svg?style=flat-square)](https://circleci.com/gh/blueflag/cognito-gateway)
 
 ## Usage
 
