@@ -21,7 +21,7 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
                 });
             });
 
-        Pool.signUp(username, password, attributeList, null, async (err: Object): Promise<> => {
+        Pool.signUp(username, password, attributeList, null, async (err: Object, result: Object): Promise<> => {
             if (err) {
                 return reject(GromitError.wrap(err));
             }
@@ -29,7 +29,10 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
             // Delete password from response
             delete request.body.password;
             return resolve({statusCode: 200, body: {
-                user: request.body
+                user: {
+                    ...request.body,
+                    sub: result.userSub
+                }
             }});
         });
     });
