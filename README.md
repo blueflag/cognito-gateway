@@ -280,7 +280,12 @@ requestBody:
     username: string
     password: string
     attributes: array
-responseBody: cognitoUser
+responseBody: 
+    user: cognitoUser
+    verificationAttribute: string
+    verificationMedium: string
+    verificationValue: string
+
 ```
 
 
@@ -305,7 +310,9 @@ method: post
 requestBody:
     username: string
 responseBody:
-    status: string
+    verificationAttribute: string
+    verificationMedium: string
+    verificationValue: string
 ```
 
 
