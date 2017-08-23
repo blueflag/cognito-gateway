@@ -17,12 +17,21 @@ export default function signUpConfirmResend(request: Object): Promise<{statusCod
             Pool
         });
 
-        user.resendConfirmationCode((err: Object): void => {
+        user.resendConfirmationCode((err: Object, result: Object): void => {
             if (err) {
                 return reject(GromitError.wrap(err));
             }
 
-            return resolve({statusCode: 200, body: {status: 'success'}});
+            const delivery = result.CodeDeliveryDetails || {};
+
+            return resolve({
+                statusCode: 200,
+                body: {
+                    verificationAttribute: delivery.AttributeName,
+                    verificationMedium: delivery.DeliveryMedium,
+                    verificationValue: delivery.Destination
+                }
+            });
         });
     });
 }

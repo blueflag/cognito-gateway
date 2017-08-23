@@ -26,13 +26,18 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
                 return reject(GromitError.wrap(err));
             }
 
+            const delivery = result.CodeDeliveryDetails || {};
+
             // Delete password from response
             delete request.body.password;
             return resolve({statusCode: 200, body: {
                 user: {
                     ...request.body,
                     sub: result.userSub
-                }
+                },
+                verificationAttribute: delivery.AttributeName,
+                verificationMedium: delivery.DeliveryMedium,
+                verificationValue: delivery.Destination
             }});
         });
     });
