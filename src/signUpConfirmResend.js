@@ -3,6 +3,7 @@ import {CognitoUser} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameRequired} from './error';
 import {GromitError} from 'gromit';
+import formatUsername from './util/formatUsername';
 
 export default function signUpConfirmResend(request: Object): Promise<{statusCode: number, body: Object}> {
     return new Promise((resolve: Function, reject: Function): void => {
@@ -13,7 +14,7 @@ export default function signUpConfirmResend(request: Object): Promise<{statusCod
         }
 
         const user = new CognitoUser({
-            Username: username,
+            Username: formatUsername(username),
             Pool
         });
 
