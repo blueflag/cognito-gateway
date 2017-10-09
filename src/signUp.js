@@ -3,6 +3,7 @@ import {CognitoUserAttribute} from 'amazon-cognito-identity-js';
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
 import {GromitError} from 'gromit';
+import formatUsername from './util/formatUsername';
 
 export default async function signUp(request: Object): Promise<{statusCode: number, body: Object}> {
 
@@ -21,7 +22,7 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
                 });
             });
 
-        Pool.signUp(username, password, attributeList, null, async (err: Object, result: Object): Promise<> => {
+        Pool.signUp(formatUsername(username), password, attributeList, null, async (err: Object, result: Object): Promise<> => {
             if (err) {
                 return reject(GromitError.wrap(err));
             }
@@ -33,6 +34,7 @@ export default async function signUp(request: Object): Promise<{statusCode: numb
             return resolve({statusCode: 200, body: {
                 user: {
                     ...request.body,
+                    username: formatUsername(username),
                     sub: result.userSub
                 },
                 verificationAttribute: delivery.AttributeName,

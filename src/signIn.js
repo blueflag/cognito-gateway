@@ -7,6 +7,7 @@ import {
 import Pool from './userPool';
 import {usernameAndPasswordRequired} from './error';
 import {GromitError} from 'gromit';
+import formatUsername from './util/formatUsername';
 
 export default async function signIn(request: Object): Promise<{statusCode: number, body: Object}> {
 
@@ -19,12 +20,12 @@ export default async function signIn(request: Object): Promise<{statusCode: numb
         }
 
         const authenticationDetails = new AuthenticationDetails({
-            Username: username,
+            Username: formatUsername(username),
             Password: password
         });
 
         const user = new CognitoUser({
-            Username: username,
+            Username: formatUsername(username),
             Pool
         });
 
