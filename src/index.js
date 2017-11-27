@@ -27,6 +27,8 @@ Config.credentials = new CognitoIdentityCredentials({
 
 function parseRequest(method: Function, methodName: string, config: Object): Function {
     return async (httpEvent: Object, lambdaContext: Object, callback: Function): Promise<void> => {
+        // Return straight after callback, don't wait for event loop to empty
+        lambdaContext.callbackWaitsForEmptyEventLoop = false;
 
         const authHeader = httpEvent.headers.Authorization || '';
         const [, token] = authHeader.split(' ');
