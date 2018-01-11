@@ -84,10 +84,15 @@ function parseRequest(method: Function, methodName: string, config: Object): Fun
                 try {
                     await postHook(err, null, httpEvent, lambdaContext);
                 } catch(hookError) {
+                    if(config.logErrors) {
+                        config.logErrors(hookError);
+                    }
                     return response(hookError.statusCode || 500, GromitError.wrap(hookError));
                 }
             }
-
+            if(config.logErrors) {
+                config.logErrors(err);
+            }
             return response(err.statusCode || 500, GromitError.wrap(err));
         }
     };
