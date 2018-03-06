@@ -1,6 +1,6 @@
 {
   "name": "@blueflag/cognito-gateway",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A gateway lambda for dealing with cognito apis",
   "main": "lib/index.js",
   "license": "UNLICENSED",
