@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.19.0",
-    "aws-sdk": "^2.7.21",
+    "aws-sdk": "2.7.21",
     "dotenv": "^2.0.0",
     "gromit": "^0.0.10",
     "jsonwebtoken": "^7.2.1"
